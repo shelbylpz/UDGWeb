@@ -1,7 +1,6 @@
 import os
 from flask import Flask
 from flask import render_template, request, redirect, session
-from flaskext.mysql import MySQL
 import psycopg2
 from datetime import datetime
 from flask import send_from_directory
@@ -13,8 +12,8 @@ app.secret_key="develoteca"
 def conectar_db():
     conexion = psycopg2.connect(
         user = 'postgres',
-        password = 'password',
-        host = 'localhost',
+        password = '22042003-a',
+        host = 'azure-flask-dbapp.postgres.database.azure.com',
         port = '5432',
         database = 'UDGDB'
     )
