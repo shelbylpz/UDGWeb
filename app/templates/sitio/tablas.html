@@ -1,0 +1,90 @@
+{% include 'sitio/cabecera.html' %}
+
+<div class="row">
+    <div class="col-3">
+      <div id="list-example" class="list-group">
+        
+        <a class="list-group-item list-group-item-action" href="{% if tabla == 'administrativo' %}#list-item-administrativo{% else %}/tablas/administrativo{% endif %}">Administrativo</a>
+        <a class="list-group-item list-group-item-action" href="{% if tabla == 'centro' %}#list-item-centros{% else %}/tablas/centro{% endif %}">Centros</a>
+        <a class="list-group-item list-group-item-action" href="{% if tabla == 'campus' %}#list-item-campus{% else %}/tablas/campus{% endif %}">Campus</a>
+        <a class="list-group-item list-group-item-action" href="{% if tabla == 'carrera' %}#list-item-carrera{% else %}/tablas/carrera{% endif %}">Carreras</a>
+      
+
+
+      </div>
+    </div>
+    <div class="col-9">
+      <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    {% if tabla == 'administrativo' %}
+                    <h2 id="list-item-administrativo">Administrativos</h2>
+                    {% endif %}
+                    {% if tabla == 'centro' %}
+                    <h2 id="list-item-centros">Centros</h2>
+                    {% endif %}
+                    {% if tabla == 'campus' %}
+                    <h2 id="list-item-campus">Campus</h2>
+                    {% endif %}
+                    {% if tabla == 'carrera' %}
+                    <h2 id="list-item-carrera">Carreras</h2>
+                    {% endif %}
+                    <tr>
+                        {% if tabla == 'administrativo' %}
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        {% endif %}
+                        {% if tabla == 'centro' %}
+                        <th>ID</th>
+                        <th>Centro</th>
+                        <th>Localizacion</th>
+                        <th>Administrativo</th>
+                        {% endif %}
+                        {% if tabla == 'campus' %}
+                        <th>ID</th>
+                        <th>Campus</th>
+                        <th>Localizacion</th>
+                        <th>Administrativo</th>
+                        <th>Centro</th>
+                        {% endif %}
+                        {% if tabla == 'carrera' %}
+                        <th>ID</th>
+                        <th>Carrera</th>
+                        <th>Cupos</th>
+                        <th>Administrativo</th>
+                        <th>Campus</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for seleccion in seleccions %}
+                    <tr >
+                        {% if tabla == 'administrativo' %}
+                        <td>{{ seleccion[0] }}</td>
+                        <td>{{ seleccion[1] }}</td>
+                        {% endif %}
+                        {% if tabla == 'centro' %}
+                        <td>{{ seleccion[0] }}</td>
+                        <td>{{ seleccion[1] }}</td>
+                        <td>{{ seleccion[2] }}</td>
+                        <td>{{ seleccion[3] }}</td>
+                        {% endif %}
+                        {% if tabla == 'campus' or tabla == 'carrera' %}
+                        <td>{{ seleccion[0] }}</td>
+                        <td>{{ seleccion[1] }}</td>
+                        <td>{{ seleccion[2] }}</td>
+                        <td>{{ seleccion[3] }}</td>
+                        <td>{{ seleccion[4] }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+{% include 'sitio/pie.html' %}

@@ -1,0 +1,80 @@
+{% include 'admin/cabecera.html' %}
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    Datos del Auto
+                </div>
+                <div class="card-body">
+                    <form action="/admin/autos/guardar" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="txtMatricula" class="form-label">Matricula:</label>
+                            <input type="text" class="form-control" name="txtMatricula" id="txtMatricula"aria-describedby="helpId" placeholder="Escriba la Matricula del Auto">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtMarca" class="form-label">Marca:</label>
+                            <input type="text" class="form-control" name="txtMarca" id="txtMarca"aria-describedby="helpId" placeholder="Escriba la Marca del Auto">
+                        </div>
+
+                        <div class="mb-3">
+                          <label for="txtModelo" class="form-label">Modelo</label>
+                          <input type="text" class="form-control" name="txtModelo" id="txtModelo" aria-describedby="helpId" placeholder="Escriba el Modelo del Auto">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Matricula</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for auto in autos %}
+                    <tr >
+                        <td>{{ auto[0] }}</td>
+                        <td>{{ auto[1] }}</td>
+                        <td>{{ auto[2] }}</td>
+                        <td>{{ auto[3] }}</td>
+                        <td>
+                            <form action="/admin/autos/borrar" method="post">
+                                <input value="{{ auto[0] }}" type="hidden" name="txtID" id="txtID">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                            <br>
+                            <form action="/admin/autos/edit" method="post">
+                                <input value="{{ auto[0] }}" type="hidden" name="txtID" id="txtID">
+                                <button type="submit" class="btn btn-primary">Editar</button>
+
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+           
+            
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% include 'admin/pie.html' %}
