@@ -98,6 +98,7 @@ def admin_cerrar():
     return redirect('/admin/login')
 
  # Administracion de datos
+    #adminitrativo
 @app.route('/admin/administrativo')
 def admin_administrativo():
 
@@ -136,13 +137,141 @@ def admin_administrativo_borrar():
         return redirect('/admin/login')
     _id = request.form['txtID']
     print(_id)
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    cursor.execute("DELETE FROM administrativo WHERE id=%s",(_id))
-    conexion.commit()
+    admin_administrativo_delete(_id)
     return redirect("/admin/administrativo")
 
+def admin_administrativo_delete(_id):
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT id_cent FROM centro WHERE id_adminis='"+_id+"'")
+    centros = cursor.fetchall()
+    for centro in centros:
+        admin_centro_delete(centro[0])
+    #cursor.execute("DELETE FROM administrativo WHERE id='"+_id+"'")
+    conexion.commit()
+
+
+#centro
+@app.route('/admin/centro')
+def admin_centro():
+
+    if not 'login' in session:
+        return redirect('/admin/login')
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM administrativo ORDER BY id")
+    administrativos = cursor.fetchall()
+    conexion.commit()
+    print(administrativos)
     
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM centro, administrativo WHERE id_adminis = id ORDER BY id_cent")
+    centros = cursor.fetchall()
+    conexion.commit()
+    print(centros)
+    return render_template('admin/centro.html', administrativos=administrativos, centros=centros)
+
+@app.route('/admin/centro/guardar', methods=['POST'])
+def admin_centro_guardar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _nombre = request.form['txtNombre']
+    _localizacion = request.form['txtLocalizacion']
+    _id_admin = request.form.get("txtAdmin")
+   
+    sql = "INSERT INTO centro (id_cent, nombre_cent,localizacion_cent,id_adminis) VALUES (DEFAULT, '"+_nombre+"','"+_localizacion+"','"+_id_admin+"');"
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute(sql)
+    conexion.commit()
+    print(_nombre)
+    print(_localizacion)
+    print(_id_admin)
+    return redirect('/admin/centro')
+
+@app.route('/admin/centro/borrar', methods=['POST'])
+def admin_centro_borrar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    print(_id)
+    admin_centro_delete(_id)
+    return redirect("/admin/centro")
+
+def admin_centro_delete(_id):
+    print(_id);
+    sql = "SELECT * FROM campus WHERE id_cent="+str(_id)+";"
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute(sql)
+    campuss = cursor.fetchall()
+    for campus in campuss:
+        admin_campus_delete(campus[0])
+    cursor.execute("DELETE FROM centro WHERE id_cent='"+str(_id)+"';")
+    conexion.commit()
+    
+#Campus
+@app.route('/admin/campus')
+def admin_campus():
+
+    if not 'login' in session:
+        return redirect('/admin/login')
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM administrativo ORDER BY id")
+    administrativos = cursor.fetchall()
+    cursor.execute("SELECT * FROM centro ORDER BY id_cent")
+    centros = cursor.fetchall()
+    conexion.commit()
+    print(administrativos)
+    print(centros)
+    
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and campus.id_cent = centro.id_cent ORDER BY id_camp")
+    campuss = cursor.fetchall()
+    conexion.commit()
+    print(campuss)
+    return render_template('admin/campus.html', administrativos=administrativos, campuss=campuss, centros=centros)
+
+@app.route('/admin/campus/guardar', methods=['POST'])
+def admin_campus_guardar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _nombre = request.form['txtNombre']
+    _localizacion = request.form['txtLocalizacion']
+    _id_admin = request.form.get("txtAdmin")
+    _id_centro = request.form.get("txtCentro")
+   
+    sql = "INSERT INTO campus (id_camp, nombre_camp,localizacion_camp,id_adminis,id_cent) VALUES (DEFAULT, '"+_nombre+"','"+_localizacion+"','"+_id_admin+"','"+_id_centro+"');"
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute(sql)
+    conexion.commit()
+    print(_nombre)
+    print(_localizacion)
+    print(_id_admin)
+    return redirect('/admin/campus')
+
+@app.route('/admin/campus/borrar', methods=['POST'])
+def admin_campus_borrar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    print(_id)
+    admin_campus_delete(_id)
+    return redirect("/admin/campus")
+
+def admin_campus_delete(id):
+    print(id)
+    sql = "DELETE FROM campus WHERE id_camp='"+str(id)+"';"
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute(sql)
+    conexion.commit()
 #PArte de administracion de datos
 
 @app.route('/admin/autos')
