@@ -1,6 +1,5 @@
 import os
-from flask import Flask
-from flask import render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session
 import psycopg2
 from datetime import datetime
 from flask import send_from_directory
@@ -148,7 +147,12 @@ def admin_administrativo_delete(_id):
     for centro in centros:
         admin_centro_delete(centro[0])
     #cursor.execute("DELETE FROM administrativo WHERE id='"+_id+"'")
+    cursor.execute("SELECT id_camp FROM campus WHERE id_adminis='"+_id+"'")
+    campus = cursor.fetchall()
+    for campu in campus:
+        admin_campus_delete(campu[0])
     conexion.commit()
+    conexion.close()
 
 
 #centro
@@ -211,7 +215,67 @@ def admin_centro_delete(_id):
         admin_campus_delete(campus[0])
     cursor.execute("DELETE FROM centro WHERE id_cent='"+str(_id)+"';")
     conexion.commit()
+    conexion.close()
     
+@app.route('/admin/centro/edit', methods=['POST'])
+def admin_centro_edit():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    print(_id)
+    
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM administrativo ORDER BY id")
+    administrativos = cursor.fetchall()
+    sql = "SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM centro, administrativo WHERE id_adminis = id AND id_cent='"+_id+"';"
+    cursor.execute(sql)
+    centro = cursor.fetchall()
+    conexion.commit()
+    print(centro)
+
+    return render_template('admin/centro/update.html', centro=centro, administrativos=administrativos)
+
+@app.route('/admin/centro/update', methods=['POST'])
+def admin_centro_update():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    sql = "SELECT * FROM centro WHERE id_cent='"+_id+"';"
+    cursor.execute(sql,_id)
+    centroOld = cursor.fetchall()
+    conexion.commit()
+    print(centroOld)
+
+    _nombre = request.form['txtNombre']
+    if _nombre == '':
+        print("Si esta vacia nombre")
+        _nombre = centroOld[0][1]
+    _localizacion = request.form['txtLocalizacion']
+    if _localizacion == '':
+        print("Si esta vacia marca")
+        _localizacion = centroOld[0][2]
+    _admin = request.form['txtAdmin']
+    if _admin == '':
+        print("Si esta vacia modelo")
+        _admin = centroOld[0][3]
+    print(_id)
+    print(_nombre)
+    print(_localizacion)
+    print(_admin)
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    sql = "UPDATE centro SET nombre_cent='"+_nombre+"', localizacion_cent='"+_localizacion+"', id_adminis="+str(_admin)+" WHERE id_cent="+_id
+    cursor.execute(sql)
+    conexion.commit()
+
+
+    return redirect("/admin/centro")
+
 #Campus
 @app.route('/admin/campus')
 def admin_campus():
@@ -272,6 +336,69 @@ def admin_campus_delete(id):
     cursor = conexion.cursor()
     cursor.execute(sql)
     conexion.commit()
+    conexion.close()
+
+@app.route('/admin/campus/edit', methods=['POST'])
+def admin_campus_edit():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    print(_id)
+    
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM administrativo ORDER BY id")
+    administrativos = cursor.fetchall()
+    cursor.execute("SELECT * FROM centro ORDER BY id_cent")
+    centros = cursor.fetchall()
+    cursor.execute("SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and id_camp="+_id+";")
+    campus = cursor.fetchall()
+    conexion.commit()
+    return render_template('admin/campus/update.html', campus=campus,centros=centros, administrativos=administrativos)
+
+@app.route('/admin/campus/update', methods=['POST'])
+def admin_campus_update():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    sql = "SELECT * FROM campus WHERE id_camp='"+_id+"';"
+    cursor.execute(sql,_id)
+    old = cursor.fetchall()
+    conexion.commit()
+    print(old)
+
+    _nombre = request.form['txtNombre']
+    if _nombre == '':
+        print("Si esta vacia nombre")
+        _nombre = old[0][1]
+    _localizacion = request.form['txtLocalizacion']
+    if _localizacion == '':
+        print("Si esta vacia localizacion")
+        _localizacion = old[0][2]
+    _admin = request.form.get('txtAdmin')
+    if _admin == '':
+        print("Si esta vacia administrativo")
+        _admin = old[0][3]
+    _centro = request.form.get('txtCentro')
+    if _centro == '':
+        print("Si esta vacia centro")
+        _centro = old[0][4]
+    print(_id)
+    print(_nombre)
+    print(_localizacion)
+    print(_admin)
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    sql = "UPDATE campus SET nombre_camp='"+_nombre+"', localizacion_camp='"+_localizacion+"', id_adminis="+str(_admin)+", id_cent="+str(_centro)+" WHERE id_camp="+_id
+    cursor.execute(sql)
+    conexion.commit()
+
+
+    return redirect("/admin/campus")
 #PArte de administracion de datos
 
 @app.route('/admin/autos')
@@ -343,7 +470,7 @@ def admin_edit_auto():
 
     return render_template('admin/update.html', autos=autos)
 
-@app.route('/admin/autos/update', methods={'POST'})
+@app.route('/admin/autos/update', methods=['POST'])
 def admin_auto_update():
     if not 'login' in session:
         return redirect('/admin/login')

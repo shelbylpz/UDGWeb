@@ -1,0 +1,71 @@
+{% include 'admin/cabecera.html' %}
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    Datos del Centro
+                </div>
+                <div class="card-body">
+                    <form action="/admin/centro/update" method="post" enctype="multipart/form-data">
+                        <input value="{{ centro[0][0] }}" type="hidden" name="txtID" id="txtID">
+                        <div class="mb-3">
+                            <label for="txtNombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" name="txtNombre" id="txtNombre"aria-describedby="helpId" placeholder="{{ centro[0][1] }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtLocalizacion" class="form-label">Localizacion:</label>
+                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"aria-describedby="helpId" placeholder="{{ centro[0][2] }}">
+                        </div>
+                        
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="txtAdmin">Options</label>
+                            <select class="form-select" id="txtAdmin" name="txtAdmin">
+                              <option selected></option>
+                              {% for administrativo in administrativos %}
+                              <option value="{{ administrativo[0] }}">{{ administrativo[1] }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>                          
+
+                        <button type="submit" class="btn btn-primary">Update</button>
+
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Localizacion</th>
+                        <th>Administrativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ centro[0][0] }}</td>
+                        <td>{{ centro[0][1] }}</td>
+                        <td>{{ centro[0][2] }}</td>
+                        <td>{{ centro[0][3] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+           
+            
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% include 'admin/pie.html' %}
