@@ -46,12 +46,12 @@ def tablas_seleccion(tabla):
     cursor = conexion.cursor()
     if(tabla == 'administrativo'):
         query = 'SELECT * FROM administrativo ORDER BY id'
-    if (tabla == 'centro'):
-        query = 'SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM centro, administrativo WHERE id_adminis = id ORDER BY id_cent'
+    if (tabla == 'Campus'):
+        query = 'SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM campus, administrativo WHERE id_adminis = id ORDER BY id_cent'
     if(tabla == 'campus'):
-        query = 'SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and campus.id_cent = centro.id_cent ORDER BY id_camp'
+        query = 'SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and centro.id_cent = campus.id_cent ORDER BY id_camp'
     if(tabla == 'carrera'):
-        query = 'SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and carrera.id_camp = campus.id_camp ORDER BY id_car'
+        query = 'SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and carrera.id_car = campus.id_camp ORDER BY id_car'
     cursor.execute(query)
     seleccion = cursor.fetchall()
     conexion.commit()
@@ -63,7 +63,7 @@ def nosotros():
 
 
 # Caracteristicas de Administrador
-@app.route('/admin/')
+@app.route('/admin')
 def admin_index():
     if not 'login' in session:
         return redirect('/admin/login')
@@ -146,16 +146,19 @@ def admin_administrativo_delete(_id):
     centros = cursor.fetchall()
     for centro in centros:
         admin_centro_delete(centro[0])
-    #cursor.execute("DELETE FROM administrativo WHERE id='"+_id+"'")
     cursor.execute("SELECT id_camp FROM campus WHERE id_adminis='"+_id+"'")
-    campus = cursor.fetchall()
-    for campu in campus:
-        admin_campus_delete(campu[0])
+    campuss = cursor.fetchall()
+    for campus in campuss:
+        admin_campus_delete(campus[0])
+    cursor.execute("SELECT id_car FROM carrera WHERE id_adminis='"+_id+"'")
+    carreras = cursor.fetchall()
+    for carrera in carreras:
+        admin_carrera_delete(carrera[0])
     conexion.commit()
     conexion.close()
 
 
-#centro
+#Campus
 @app.route('/admin/centro')
 def admin_centro():
 
@@ -206,10 +209,9 @@ def admin_centro_borrar():
 
 def admin_centro_delete(_id):
     print(_id);
-    sql = "SELECT * FROM campus WHERE id_cent="+str(_id)+";"
     conexion = conectar_db()
     cursor = conexion.cursor()
-    cursor.execute(sql)
+    cursor.execute("SELECT * FROM campus WHERE id_cent="+str(_id)+";")
     campuss = cursor.fetchall()
     for campus in campuss:
         admin_campus_delete(campus[0])
@@ -230,11 +232,11 @@ def admin_centro_edit():
     administrativos = cursor.fetchall()
     sql = "SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM centro, administrativo WHERE id_adminis = id AND id_cent='"+_id+"';"
     cursor.execute(sql)
-    centro = cursor.fetchall()
+    centros = cursor.fetchall()
     conexion.commit()
-    print(centro)
+    print(centros)
 
-    return render_template('admin/centro/update.html', centro=centro, administrativos=administrativos)
+    return render_template('admin/centro/update.html', centros=centros, administrativos=administrativos)
 
 @app.route('/admin/centro/update', methods=['POST'])
 def admin_centro_update():
@@ -246,22 +248,22 @@ def admin_centro_update():
     cursor = conexion.cursor()
     sql = "SELECT * FROM centro WHERE id_cent='"+_id+"';"
     cursor.execute(sql,_id)
-    centroOld = cursor.fetchall()
+    Old = cursor.fetchall()
     conexion.commit()
-    print(centroOld)
+    print(Old)
 
     _nombre = request.form['txtNombre']
     if _nombre == '':
         print("Si esta vacia nombre")
-        _nombre = centroOld[0][1]
+        _nombre = Old[0][1]
     _localizacion = request.form['txtLocalizacion']
     if _localizacion == '':
         print("Si esta vacia marca")
-        _localizacion = centroOld[0][2]
+        _localizacion = Old[0][2]
     _admin = request.form['txtAdmin']
     if _admin == '':
         print("Si esta vacia modelo")
-        _admin = centroOld[0][3]
+        _admin = Old[0][3]
     print(_id)
     print(_nombre)
     print(_localizacion)
@@ -308,9 +310,9 @@ def admin_campus_guardar():
     _nombre = request.form['txtNombre']
     _localizacion = request.form['txtLocalizacion']
     _id_admin = request.form.get("txtAdmin")
-    _id_centro = request.form.get("txtCentro")
+    _id_Campus = request.form.get("txtCampus")
    
-    sql = "INSERT INTO campus (id_camp, nombre_camp,localizacion_camp,id_adminis,id_cent) VALUES (DEFAULT, '"+_nombre+"','"+_localizacion+"','"+_id_admin+"','"+_id_centro+"');"
+    sql = "INSERT INTO campus (id_camp, nombre_camp,localizacion_camp,id_adminis,id_cent) VALUES (DEFAULT, '"+_nombre+"','"+_localizacion+"','"+_id_admin+"','"+_id_Campus+"');"
     conexion = conectar_db()
     cursor = conexion.cursor()
     cursor.execute(sql)
@@ -331,10 +333,13 @@ def admin_campus_borrar():
 
 def admin_campus_delete(id):
     print(id)
-    sql = "DELETE FROM campus WHERE id_camp='"+str(id)+"';"
     conexion = conectar_db()
     cursor = conexion.cursor()
-    cursor.execute(sql)
+    cursor.execute("SELECT * FROM carrera WHERE id_cent="+str(id)+";")
+    carreras = cursor.fetchall()
+    for carrera in carreras:
+        admin_carrera_delete(carrera[0])
+    cursor.execute("DELETE FROM campus WHERE id_camp='"+str(id)+"';")
     conexion.commit()
     conexion.close()
 
@@ -376,7 +381,7 @@ def admin_campus_update():
         _nombre = old[0][1]
     _localizacion = request.form['txtLocalizacion']
     if _localizacion == '':
-        print("Si esta vacia localizacion")
+        print("Si esta vacia Cupos")
         _localizacion = old[0][2]
     _admin = request.form.get('txtAdmin')
     if _admin == '':
@@ -384,7 +389,7 @@ def admin_campus_update():
         _admin = old[0][3]
     _centro = request.form.get('txtCentro')
     if _centro == '':
-        print("Si esta vacia centro")
+        print("Si esta vacia Centro")
         _centro = old[0][4]
     print(_id)
     print(_nombre)
@@ -399,6 +404,126 @@ def admin_campus_update():
 
 
     return redirect("/admin/campus")
+
+@app.route('/admin/carrera')
+def admin_carrera():
+    if not 'login' in session:
+        return redirect('/admin/login')
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM administrativo ORDER BY id")
+    administrativos = cursor.fetchall()
+    cursor.execute("SELECT * FROM campus ORDER BY id_camp")
+    campuss = cursor.fetchall()
+    conexion.commit()
+    print(administrativos)
+    print(campuss)
+    
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and carrera.id_camp = campus.id_camp ORDER BY id_car")
+    carreras = cursor.fetchall()
+    conexion.commit()
+    print(carreras)
+    return render_template('admin/carrera.html', administrativos=administrativos, campuss=campuss, carreras=carreras)
+
+@app.route('/admin/carrera/guardar', methods=['POST'])
+def admin_carrera_guardar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _nombre = request.form['txtNombre']
+    _cupos = request.form['txtCupos']
+    _id_admin = request.form.get("txtAdmin")
+    _id_campus = request.form.get("txtCampus")
+   
+    sql = "INSERT INTO carrera (id_car, nombre_car,cupos_car,id_adminis,id_camp) VALUES (DEFAULT, '"+_nombre+"',"+_cupos+",'"+_id_admin+"','"+_id_campus+"');"
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute(sql)
+    conexion.commit()
+    print(_nombre)
+    print(_cupos)
+    print(_id_admin)
+    print(_id_campus)
+    return redirect('/admin/carrera')
+
+@app.route('/admin/carrera/borrar', methods=['POST'])
+def admin_carrera_borrar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    print(_id)
+    admin_carrera_delete(_id)
+    return redirect("/admin/carrera")
+
+def admin_carrera_delete(id):
+    print(id)
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM carrera WHERE id_car='"+str(id)+"';")
+    conexion.commit()
+    conexion.close()
+
+@app.route('/admin/carrera/edit', methods=['POST'])
+def admin_carrera_edit():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    print(_id)
+    
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM administrativo ORDER BY id")
+    administrativos = cursor.fetchall()
+    cursor.execute("SELECT * FROM campus ORDER BY id_cent")
+    campuss = cursor.fetchall()
+    cursor.execute("SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and id_car="+_id+";")
+    carrera = cursor.fetchall()
+    conexion.commit()
+    return render_template('/admin/carrera/update.html', administrativos=administrativos, campuss=campuss, carrera=carrera)
+
+@app.route('/admin/carrera/update', methods=['POST'])
+def admin_carrera_update():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    sql = "SELECT * FROM carrera WHERE id_car='"+_id+"';"
+    cursor.execute(sql,_id)
+    old = cursor.fetchall()
+    conexion.commit()
+    print(old)
+
+    _nombre = request.form['txtNombre']
+    if _nombre == '':
+        print("Si esta vacia nombre")
+        _nombre = old[0][1]
+    _cupos = request.form['txtCupos']
+    if _cupos == '':
+        print("Si esta vacia Cupos")
+        _cupos = old[0][2]
+    _admin = request.form.get('txtAdmin')
+    if _admin == '':
+        print("Si esta vacia administrativo")
+        _admin = old[0][3]
+    _campus = request.form.get('txtCampus')
+    if _campus == '':
+        print("Si esta vacia Campus")
+        _campus = old[0][4]
+    print(_id)
+    print(_nombre)
+    print(_cupos)
+    print(_admin)
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    sql = "UPDATE carrera SET nombre_car='"+str(_nombre)+"', cupos_car="+str(_cupos)+", id_adminis="+str(_admin)+", id_camp="+str(_campus)+" WHERE id_car="+_id
+    cursor.execute(sql)
+    conexion.commit()
+    return redirect('/admin/carrera')
 #PArte de administracion de datos
 
 @app.route('/admin/autos')

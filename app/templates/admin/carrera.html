@@ -1,0 +1,98 @@
+{% include 'admin/cabecera.html' %}
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    Datos del carrera
+                </div>
+                <div class="card-body">
+                    <form action="/admin/carrera/guardar" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="txtNombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" name="txtNombre" id="txtNombre" aria-describedby="helpId" placeholder="Escriba el Nombre de la carrera">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtCupos" class="form-label">Cupos:</label>
+                            <input type="text" class="form-control" name="txtCupos" id="txtCupos"aria-describedby="helpId" placeholder="Escriba la cantidad de Cupos dentro de la carrera">
+                        </div>
+                        <div><label class="form-label" for="administrativo">Administrativo</label></div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="txtAdmin">Options</label>
+                            <select class="form-select" id="txtAdmin" name="txtAdmin">
+                              <option selected>Choose...</option>
+                              {% for administrativo in administrativos %}
+                              <option value="{{ administrativo[0] }}">{{ administrativo[1] }}</option>
+                              {% endfor %}
+                              
+                            </select>
+                        </div>   
+                        <div><label class="form-label" for="txtCampus">Campus</label></div>
+                        <div class="input-group mb-3">
+                            <label class="input-group-text" for="txtCampus">Options</label>
+                            <select class="form-select" id="txtCampus" name="txtCampus">
+                              <option selected>Choose...</option>
+                              {% for campus in campuss %}
+                              <option value="{{ campus[0] }}">{{ campus[1] }}</option>
+                              {% endfor %}
+                              
+                            </select>
+                        </div>                       
+
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Cupos</th>
+                        <th>Administrativo</th>
+                        <th>Campus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for carrera in carreras %}
+                    <tr >
+                        <td>{{ carrera[0] }}</td>
+                        <td>{{ carrera[1] }}</td>
+                        <td>{{ carrera[2] }}</td>
+                        <td>{{ carrera[3] }}</td>
+                        <td>{{ carrera[4] }}</td>
+                        <td>
+                            <form action="/admin/carrera/borrar" method="post">
+                                <input value="{{ carrera[0] }}" type="hidden" name="txtID" id="txtID">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                            <br>
+                            <form action="/admin/carrera/edit" method="post">
+                                <input value="{{ carrera[0] }}" type="hidden" name="txtID" id="txtID">
+                                <button type="submit" class="btn btn-primary">Editar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+           
+            
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% include 'admin/pie.html' %}
