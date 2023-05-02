@@ -46,12 +46,12 @@ def tablas_seleccion(tabla):
     cursor = conexion.cursor()
     if(tabla == 'administrativo'):
         query = 'SELECT * FROM administrativo ORDER BY id'
-    if (tabla == 'Campus'):
-        query = 'SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM campus, administrativo WHERE id_adminis = id ORDER BY id_cent'
+    if (tabla == 'centro'):
+        query = 'SELECT * FROM public.detail_centro'
     if(tabla == 'campus'):
-        query = 'SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and centro.id_cent = campus.id_cent ORDER BY id_camp'
+        query = 'SELECT * FROM public.detail_campus'
     if(tabla == 'carrera'):
-        query = 'SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and carrera.id_car = campus.id_camp ORDER BY id_car'
+        query = 'SELECT * FROM public.detail_carrera'
     cursor.execute(query)
     seleccion = cursor.fetchall()
     conexion.commit()
@@ -154,6 +154,7 @@ def admin_administrativo_delete(_id):
     carreras = cursor.fetchall()
     for carrera in carreras:
         admin_carrera_delete(carrera[0])
+    cursor.execute("DELETE FROM administrativo WHERE id='"+str(_id)+"';")
     conexion.commit()
     conexion.close()
 
@@ -174,7 +175,7 @@ def admin_centro():
     
     conexion = conectar_db()
     cursor = conexion.cursor()
-    cursor.execute("SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM centro, administrativo WHERE id_adminis = id ORDER BY id_cent")
+    cursor.execute("SELECT * FROM public.detail_centro")
     centros = cursor.fetchall()
     conexion.commit()
     print(centros)
@@ -208,7 +209,7 @@ def admin_centro_borrar():
     return redirect("/admin/centro")
 
 def admin_centro_delete(_id):
-    print(_id);
+    print(_id)
     conexion = conectar_db()
     cursor = conexion.cursor()
     cursor.execute("SELECT * FROM campus WHERE id_cent="+str(_id)+";")
@@ -230,13 +231,13 @@ def admin_centro_edit():
     cursor = conexion.cursor()
     cursor.execute("SELECT * FROM administrativo ORDER BY id")
     administrativos = cursor.fetchall()
-    sql = "SELECT id_cent,nombre_cent,localizacion_cent,nombre FROM centro, administrativo WHERE id_adminis = id AND id_cent='"+_id+"';"
+    sql = "SELECT * FROM public.detail_centro WHERE id_cent='"+_id+"';"
     cursor.execute(sql)
-    centros = cursor.fetchall()
+    centro = cursor.fetchall()
     conexion.commit()
-    print(centros)
+    print(centro)
 
-    return render_template('admin/centro/update.html', centros=centros, administrativos=administrativos)
+    return render_template('admin/centro/update.html', centro=centro, administrativos=administrativos)
 
 @app.route('/admin/centro/update', methods=['POST'])
 def admin_centro_update():
@@ -297,7 +298,7 @@ def admin_campus():
     
     conexion = conectar_db()
     cursor = conexion.cursor()
-    cursor.execute("SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and campus.id_cent = centro.id_cent ORDER BY id_camp")
+    cursor.execute("SELECT * FROM public.detail_campus")
     campuss = cursor.fetchall()
     conexion.commit()
     print(campuss)
@@ -335,7 +336,7 @@ def admin_campus_delete(id):
     print(id)
     conexion = conectar_db()
     cursor = conexion.cursor()
-    cursor.execute("SELECT * FROM carrera WHERE id_cent="+str(id)+";")
+    cursor.execute("SELECT * FROM carrera WHERE id_camp="+str(id)+";")
     carreras = cursor.fetchall()
     for carrera in carreras:
         admin_carrera_delete(carrera[0])
@@ -356,7 +357,7 @@ def admin_campus_edit():
     administrativos = cursor.fetchall()
     cursor.execute("SELECT * FROM centro ORDER BY id_cent")
     centros = cursor.fetchall()
-    cursor.execute("SELECT id_camp,nombre_camp,localizacion_camp,nombre,nombre_cent FROM campus, centro, administrativo WHERE campus.id_adminis = administrativo.id and id_camp="+_id+";")
+    cursor.execute("SELECT * FROM public.detail_campus id_camp="+_id+";")
     campus = cursor.fetchall()
     conexion.commit()
     return render_template('admin/campus/update.html', campus=campus,centros=centros, administrativos=administrativos)
@@ -422,7 +423,7 @@ def admin_carrera():
     
     conexion = conectar_db()
     cursor = conexion.cursor()
-    cursor.execute("SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and carrera.id_camp = campus.id_camp ORDER BY id_car")
+    cursor.execute("SELECT * FROM public.detail_carrera")
     carreras = cursor.fetchall()
     conexion.commit()
     print(carreras)
@@ -478,7 +479,7 @@ def admin_carrera_edit():
     administrativos = cursor.fetchall()
     cursor.execute("SELECT * FROM campus ORDER BY id_cent")
     campuss = cursor.fetchall()
-    cursor.execute("SELECT id_car,nombre_car,cupos_car,nombre,nombre_camp FROM carrera, campus, administrativo WHERE carrera.id_adminis = administrativo.id and id_car="+_id+";")
+    cursor.execute("SELECT * FROM public.detail_carrera id_car="+_id+";")
     carrera = cursor.fetchall()
     conexion.commit()
     return render_template('/admin/carrera/update.html', administrativos=administrativos, campuss=campuss, carrera=carrera)

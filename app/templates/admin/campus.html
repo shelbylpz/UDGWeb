@@ -11,18 +11,18 @@
                     <form action="/admin/campus/guardar" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="txtNombre" class="form-label">Nombre:</label>
-                            <input type="text" class="form-control" name="txtNombre" id="txtNombre" aria-describedby="helpId" placeholder="Escriba la Matricula del campus">
+                            <input type="text" class="form-control" name="txtNombre" id="txtNombre" aria-describedby="helpId" placeholder="Escriba el Nombre del Campus">
                         </div>
 
                         <div class="mb-3">
                             <label for="txtLocalizacion" class="form-label">Localizacion:</label>
-                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"aria-describedby="helpId" placeholder="Escriba la Marca del campus">
+                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"aria-describedby="helpId" placeholder="Escriba la Localizacion del Campus">
                         </div>
                         <div><label class="form-label" for="administrativo">Administrativo</label></div>
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="txtAdmin">Options</label>
                             <select class="form-select" id="txtAdmin" name="txtAdmin">
-                              <option selected>Choose...</option>
+                              <option selected>Elija un Administrativo</option>
                               {% for administrativo in administrativos %}
                               <option value="{{ administrativo[0] }}">{{ administrativo[1] }}</option>
                               {% endfor %}
@@ -33,7 +33,7 @@
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="txtCentro">Options</label>
                             <select class="form-select" id="txtCentro" name="txtCentro">
-                              <option selected>Choose...</option>
+                              <option selected>Elija un Centro Universitario</option>
                               {% for centro in centros %}
                               <option value="{{ centro[0] }}">{{ centro[1] }}</option>
                               {% endfor %}
