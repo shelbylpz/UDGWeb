@@ -1,0 +1,101 @@
+{% include 'admin/cabecera.html' %}
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    Datos del Resultado
+                </div>
+                <div class="card-body">
+                    <form action="/admin/resultados/guardar" method="post" enctype="multipart/form-data">
+                        <div><label class="form-label" for="txtCal">Calendario</label></div>
+                        <div class="mb-3">
+                            <select class="form-select" id="txtCal" name="txtCal" aria-describedby="txtCalFeedback" required>
+                              <option selected disabled value>Elija un Calendario</option>
+                              {% for calendario in calendarios %}
+                              <option value="{{ calendario[0] }}">{{ calendario[3] }}</option>
+                              {% endfor %}
+                            </select>
+                        </div>   
+                        <div><label class="form-label" for="txtCar">Carrera</label></div>
+                        <div class="mb-3">
+                            <select class="form-select" id="txtCar" name="txtCar" required aria-label="select example">
+                              <option selected disabled value>Elija una Carrera</option>
+                              {% for carrera in carreras %}
+                              <option value="{{ carrera[0] }}">{{ carrera[1] }}</option>
+                              {% endfor %}
+                            </select>
+                        </div>   
+
+                        <div class="mb-3">
+                            <label for="txtAsp" class="form-label">Aspirantes:</label>
+                            <input type="text" class="form-control" name="txtAsp" id="txtAsp" aria-describedby="helpId" placeholder="Escriba el total de Aspirantes" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtPmmin" class="form-label">Puntaje minimo:</label>
+                            <input type="text" class="form-control" name="txtPmin" id="txtPmin" aria-describedby="helpId" placeholder="Escriba el Puntaje Minimo" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtAdmit" class="form-label">Admitidos:</label>
+                            <input type="text" class="form-control" name="txtAdmit" id="txtAdmit" aria-describedby="helpId" placeholder="Escriba el numero de Admitidos" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Puntaje minimo</th>
+                        <th>% de admitidos</th>
+                        <th>Admitidos</th>
+                        <th>No admitidos</th>
+                        <th>Calendario</th>
+                        <th>Carrera</th>
+                        <th>Total Aspirantes</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resultado in resultados %}
+                    <tr >
+                        <td>{{ resultado[0] }}</td>
+                        <td>{{ resultado[1] }}</td>
+                        <td>{{ resultado[2] }}</td>
+                        <td>{{ resultado[3] }}</td>
+                        <td>{{ resultado[4] }}</td>
+                        <td>{{ resultado[5] }}</td>
+                        <td>{{ resultado[6] }}</td>
+                        <td>{{ resultado[7] }}</td>
+                        <td>
+                            <form action="/admin/resultados/borrar" method="post">
+                                <input value="{{ resultado[0] }}" type="hidden" name="txtID" id="txtID">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+           
+            
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% include 'admin/pie.html' %}

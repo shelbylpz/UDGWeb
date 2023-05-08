@@ -33,7 +33,6 @@ def imagenes(imagen):
 def css_link(archivocss):
     return send_from_directory(os.path.join("templates/sitio/css"),archivocss)
 
-
 # Tablas
 @app.route('/tablas')
 def tables():
@@ -52,6 +51,8 @@ def tablas_seleccion(tabla):
         query = 'SELECT * FROM public.detail_campus'
     if(tabla == 'carrera'):
         query = 'SELECT * FROM public.detail_carrera'
+    if(tabla == 'resultados'):
+        query = 'SELECT * FROM public.detail_resultados'
     cursor.execute(query)
     seleccion = cursor.fetchall()
     conexion.commit()
@@ -92,6 +93,7 @@ def admin_login_post():
     return render_template("admin/login.html", mensaje = "Acceso denegado")
 
 @app.route('/admin/cerrar')
+#Administrativo
 def admin_cerrar():
     session.clear()
     return redirect('/admin/login')
@@ -111,7 +113,7 @@ def admin_administrativo():
     conexion.commit()
     print(administrativo)
 
-    return render_template('admin/administrativo.html', administrativo=administrativo)
+    return render_template('admin/administrativo/administrativo.html', administrativo=administrativo)
 
 @app.route('/admin/administrativo/guardar', methods=['POST'])
 def admin_administrativo_guardar():
@@ -159,7 +161,7 @@ def admin_administrativo_delete(_id):
     conexion.close()
 
 
-#Campus
+#Centro
 @app.route('/admin/centro')
 def admin_centro():
 
@@ -179,7 +181,7 @@ def admin_centro():
     centros = cursor.fetchall()
     conexion.commit()
     print(centros)
-    return render_template('admin/centro.html', administrativos=administrativos, centros=centros)
+    return render_template('admin/centro/centro.html', administrativos=administrativos, centros=centros)
 
 @app.route('/admin/centro/guardar', methods=['POST'])
 def admin_centro_guardar():
@@ -302,7 +304,7 @@ def admin_campus():
     campuss = cursor.fetchall()
     conexion.commit()
     print(campuss)
-    return render_template('admin/campus.html', administrativos=administrativos, campuss=campuss, centros=centros)
+    return render_template('admin/campus/campus.html', administrativos=administrativos, campuss=campuss, centros=centros)
 
 @app.route('/admin/campus/guardar', methods=['POST'])
 def admin_campus_guardar():
@@ -406,6 +408,7 @@ def admin_campus_update():
 
     return redirect("/admin/campus")
 
+#Carrera
 @app.route('/admin/carrera')
 def admin_carrera():
     if not 'login' in session:
@@ -427,7 +430,7 @@ def admin_carrera():
     carreras = cursor.fetchall()
     conexion.commit()
     print(carreras)
-    return render_template('admin/carrera.html', administrativos=administrativos, campuss=campuss, carreras=carreras)
+    return render_template('admin/carrera/carrera.html', administrativos=administrativos, campuss=campuss, carreras=carreras)
 
 @app.route('/admin/carrera/guardar', methods=['POST'])
 def admin_carrera_guardar():
@@ -525,6 +528,93 @@ def admin_carrera_update():
     cursor.execute(sql)
     conexion.commit()
     return redirect('/admin/carrera')
+
+#Calendario
+@app.route('/admin/calendario')
+def admin_calendario():
+    if not 'login' in session:
+        return redirect('/admin/login')
+
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM calendario;")
+    calendarios = cursor.fetchall()
+    print(calendarios)
+    conexion.commit()
+    conexion.close()
+
+    return render_template('/admin/calendario/calendario.html', calendarios=calendarios)
+
+@app.route('/admin/calendario/guardar', methods=['POST'])
+def admin_calendario_guardar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    anio = request.form.get('txtAnio')
+    print(anio)
+    tipo = request.form.get('txtTipo')
+    print(tipo)
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("INSERT INTO calendario(id_cal,year_cal,tipo_cal) VALUES (DEFAULT,"+str(anio)+",'"+str(tipo)+"');")
+    conexion.commit()
+    conexion.close()
+    return redirect('/admin/calendario')
+
+@app.route('/admin/calendario/borrar', methods=['POST'])
+def admin_calendario_borrar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    _id = request.form['txtID']
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM calendario WHERE id_cal="+str(_id)+";")
+    conexion.commit()
+    conexion.close()
+
+    return redirect('/admin/calendario')
+
+#Resultados
+@app.route('/admin/resultados')
+def admin_resultados():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("SELECT * FROM public.detail_resultados;")
+    resultados = cursor.fetchall()
+    cursor.execute("SELECT * FROM carrera;")
+    carreras = cursor.fetchall()
+    cursor.execute("SELECT * FROM calendario;")
+    calendarios = cursor.fetchall()
+    conexion.close()
+    return render_template('/admin/resultados/resultados.html', resultados=resultados, carreras=carreras, calendarios=calendarios)
+
+@app.route('/admin/resultados/guardar', methods=['POST'])
+def admin_resultados_guardar():
+    if not 'login' in session:
+        return redirect('/admin/login')
+    cal = request.form.get('txtCal')
+    print(cal)
+    car = request.form.get('txtCar')
+    print(car)
+    asp = int(request.form['txtAsp'])
+    print(asp)
+    pmin = float(request.form['txtPmin'])
+    print(pmin)
+    admit = int(request.form['txtAdmit'])
+    print(admit)
+    padmit = float(admit * (100/asp))
+    print(padmit)
+    nadmit = int(asp-admit)
+    print(nadmit)
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    cursor.execute("INSERT INTO car_cal(id_table,id_car,id_cal) VALUES(DEFAULT,"+str(car)+","+str(cal)+");")
+    cursor.execute("INSERT INTO resultados(id_res,punt_min_r,porc_admi,admitidos,no_admitidos,id_cal,id_car,total_asp) VALUES(DEFAULT,"+str(pmin)+","+str(padmit)+","+str(admit)+","+str(nadmit)+","+str(cal)+","+str(car)+","+str(asp)+");")
+    conexion.commit()
+    conexion.close()
+    return redirect('/admin/resultados')
+
 #PArte de administracion de datos
 
 @app.route('/admin/autos')

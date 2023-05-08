@@ -8,6 +8,7 @@
           <a class="nav-link" href="{% if tabla == 'centro' %}#list-item-centros{% else %}/tablas/centro{% endif %}">Centros</a>
         <a class="nav-link" href="{% if tabla == 'campus' %}#list-item-campus{% else %}/tablas/campus{% endif %}">Campus</a>
         <a class="nav-link" href="{% if tabla == 'carrera' %}#list-item-carrera{% else %}/tablas/carrera{% endif %}">Carreras</a>
+        <a class="nav-link" href="{% if tabla == 'resultados' %}#list-item-resultados{% else %}/tablas/resultados{% endif %}">Resultados</a>
         </nav>
       </nav> 
         
@@ -30,6 +31,9 @@
                     {% endif %}
                     {% if tabla == 'carrera' %}
                     <h2 id="list-item-carrera">Carreras</h2>
+                    {% endif %}
+                    {% if tabla == 'resultados' %}
+                    <h2 id="list-item-resultados">Resultados</h2>
                     {% endif %}
                     <tr>
                         {% if tabla == 'administrativo' %}
@@ -56,6 +60,16 @@
                         <th>Administrativo</th>
                         <th>Campus</th>
                         {% endif %}
+                        {% if tabla == 'resultados' %}
+                        <th>ID</th>
+                        <th>Puntaje minimo</th>
+                        <th>% Admitidos</th>
+                        <th>Admitidos</th>
+                        <th>No Admitidos</th>
+                        <th>Calendario</th>
+                        <th>Carrera</th>
+                        <th>Aspirantes</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -77,6 +91,16 @@
                         <td>{{ seleccion[2] }}</td>
                         <td>{{ seleccion[3] }}</td>
                         <td>{{ seleccion[4] }}</td>
+                        {% endif %}
+                        {% if tabla == 'resultados' %}
+                        <td>{{ seleccion[0] }}</td>
+                        <td>{{ seleccion[1] }}</td>
+                        <td>{{ seleccion[2] }}</td>
+                        <td>{{ seleccion[3] }}</td>
+                        <td>{{ seleccion[4] }}</td>
+                        <td>{{ seleccion[5] }}</td>
+                        <td>{{ seleccion[6] }}</td>
+                        <td>{{ seleccion[7] }}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}
