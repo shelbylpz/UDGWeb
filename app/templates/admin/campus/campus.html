@@ -14,10 +14,6 @@
                             <input type="text" class="form-control" name="txtNombre" id="txtNombre" aria-describedby="helpId" placeholder="Escriba el Nombre del Campus">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="txtLocalizacion" class="form-label">Localizacion:</label>
-                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"aria-describedby="helpId" placeholder="Escriba la Localizacion del Campus">
-                        </div>
                         <div><label class="form-label" for="administrativo">Administrativo</label></div>
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="txtAdmin">Options</label>
@@ -56,7 +52,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Localizacion</th>
                         <th>Administrativo</th>
                         <th>Centro</th>
                         <th>Acciones</th>
@@ -69,7 +64,6 @@
                         <td>{{ campus[1] }}</td>
                         <td>{{ campus[2] }}</td>
                         <td>{{ campus[3] }}</td>
-                        <td>{{ campus[4] }}</td>
                         <td>
                             <form action="/admin/campus/borrar" method="post">
                                 <input value="{{ campus[0] }}" type="hidden" name="txtID" id="txtID">

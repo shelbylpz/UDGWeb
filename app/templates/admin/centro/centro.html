@@ -13,11 +13,6 @@
                             <label for="txtNombre" class="form-label">Nombre:</label>
                             <input type="text" class="form-control" name="txtNombre" id="txtNombre"aria-describedby="helpId" placeholder="Escriba el Nombre del Centro Universitario">
                         </div>
-
-                        <div class="mb-3">
-                            <label for="txtLocalizacion" class="form-label">Localizacion:</label>
-                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"aria-describedby="helpId" placeholder="Escriba la Localizacion del Centro Universitario">
-                        </div>
                         
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="txtAdmin">Options</label>
@@ -45,7 +40,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Localizacion</th>
                         <th>Administrativo</th>
                         <th>Acciones</th>
                     </tr>
@@ -56,7 +50,6 @@
                         <td>{{ centro[0] }}</td>
                         <td>{{ centro[1] }}</td>
                         <td>{{ centro[2] }}</td>
-                        <td>{{ centro[3] }}</td>
                         <td>
                             <form action="/admin/centro/borrar" method="post">
                                 <input value="{{ centro[0] }}" type="hidden" name="txtID" id="txtID">

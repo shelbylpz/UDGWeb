@@ -14,11 +14,6 @@
                             <label for="txtNombre" class="form-label">Nombre:</label>
                             <input type="text" class="form-control" name="txtNombre" id="txtNombre"aria-describedby="helpId" placeholder="{{ centro[0][1] }}">
                         </div>
-
-                        <div class="mb-3">
-                            <label for="txtLocalizacion" class="form-label">Localizacion:</label>
-                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"aria-describedby="helpId" placeholder="{{ centro[0][2] }}">
-                        </div>
                         
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="txtAdmin">Options</label>
@@ -45,7 +40,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Localizacion</th>
                         <th>Administrativo</th>
                     </tr>
                 </thead>
@@ -54,7 +48,6 @@
                         <td>{{ centro[0][0] }}</td>
                         <td>{{ centro[0][1] }}</td>
                         <td>{{ centro[0][2] }}</td>
-                        <td>{{ centro[0][3] }}</td>
                     </tr>
                 </tbody>
             </table>

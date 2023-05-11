@@ -43,13 +43,11 @@
                         {% if tabla == 'centro' %}
                         <th>ID</th>
                         <th>Centro</th>
-                        <th>Localizacion</th>
                         <th>Administrativo</th>
                         {% endif %}
                         {% if tabla == 'campus' %}
                         <th>ID</th>
                         <th>Campus</th>
-                        <th>Localizacion</th>
                         <th>Administrativo</th>
                         <th>Centro</th>
                         {% endif %}
@@ -83,9 +81,14 @@
                         <td>{{ seleccion[0] }}</td>
                         <td>{{ seleccion[1] }}</td>
                         <td>{{ seleccion[2] }}</td>
+                        {% endif %}
+                        {% if tabla == 'campus' %}
+                        <td>{{ seleccion[0] }}</td>
+                        <td>{{ seleccion[1] }}</td>
+                        <td>{{ seleccion[2] }}</td>
                         <td>{{ seleccion[3] }}</td>
                         {% endif %}
-                        {% if tabla == 'campus' or tabla == 'carrera' %}
+                        {% if tabla == 'carrera' %}
                         <td>{{ seleccion[0] }}</td>
                         <td>{{ seleccion[1] }}</td>
                         <td>{{ seleccion[2] }}</td>

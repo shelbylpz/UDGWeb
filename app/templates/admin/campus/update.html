@@ -16,11 +16,6 @@
                                 aria-describedby="helpId" placeholder="{{ campus[0][1] }}">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="txtLocalizacion" class="form-label">Localizacion:</label>
-                            <input type="text" class="form-control" name="txtLocalizacion" id="txtLocalizacion"
-                                aria-describedby="helpId" placeholder="{{ campus[0][2] }}">
-                        </div>
                         <div><label class="form-label" for="txtAmin">Administrativo</label></div>
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="txtAdmin">Options</label>
@@ -58,7 +53,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Localizacion</th>
                         <th>Administrativo</th>
                         <th>Centro</th>
                     </tr>
@@ -69,7 +63,6 @@
                         <td>{{ campus[0][1] }}</td>
                         <td>{{ campus[0][2] }}</td>
                         <td>{{ campus[0][3] }}</td>
-                        <td>{{ campus[0][4] }}</td>
                     </tr>
                 </tbody>
             </table>

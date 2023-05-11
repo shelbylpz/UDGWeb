@@ -56,6 +56,7 @@ def tablas_seleccion(tabla):
     cursor.execute(query)
     seleccion = cursor.fetchall()
     conexion.commit()
+    print(seleccion)
     return render_template('sitio/tablas.html',tabla=tabla, seleccions=seleccion)
 
 @app.route('/nosotros')
@@ -188,16 +189,14 @@ def admin_centro_guardar():
     if not 'login' in session:
         return redirect('/admin/login')
     _nombre = request.form['txtNombre']
-    _localizacion = request.form['txtLocalizacion']
     _id_admin = request.form.get("txtAdmin")
    
-    sql = "INSERT INTO centro (id_cent, nombre_cent,localizacion_cent,id_adminis) VALUES (DEFAULT, '"+_nombre+"','"+_localizacion+"','"+_id_admin+"');"
+    sql = "INSERT INTO centro (id_cent, nombre_cent,id_adminis) VALUES (DEFAULT, '"+_nombre+"','"+_id_admin+"');"
     conexion = conectar_db()
     cursor = conexion.cursor()
     cursor.execute(sql)
     conexion.commit()
     print(_nombre)
-    print(_localizacion)
     print(_id_admin)
     return redirect('/admin/centro')
 
@@ -259,22 +258,17 @@ def admin_centro_update():
     if _nombre == '':
         print("Si esta vacia nombre")
         _nombre = Old[0][1]
-    _localizacion = request.form['txtLocalizacion']
-    if _localizacion == '':
-        print("Si esta vacia marca")
-        _localizacion = Old[0][2]
     _admin = request.form['txtAdmin']
     if _admin == '':
         print("Si esta vacia modelo")
         _admin = Old[0][3]
     print(_id)
     print(_nombre)
-    print(_localizacion)
     print(_admin)
 
     conexion = conectar_db()
     cursor = conexion.cursor()
-    sql = "UPDATE centro SET nombre_cent='"+_nombre+"', localizacion_cent='"+_localizacion+"', id_adminis="+str(_admin)+" WHERE id_cent="+_id
+    sql = "UPDATE centro SET nombre_cent='"+_nombre+"', id_adminis="+str(_admin)+" WHERE id_cent="+_id
     cursor.execute(sql)
     conexion.commit()
 
@@ -311,17 +305,15 @@ def admin_campus_guardar():
     if not 'login' in session:
         return redirect('/admin/login')
     _nombre = request.form['txtNombre']
-    _localizacion = request.form['txtLocalizacion']
     _id_admin = request.form.get("txtAdmin")
     _id_Campus = request.form.get("txtCampus")
    
-    sql = "INSERT INTO campus (id_camp, nombre_camp,localizacion_camp,id_adminis,id_cent) VALUES (DEFAULT, '"+_nombre+"','"+_localizacion+"','"+_id_admin+"','"+_id_Campus+"');"
+    sql = "INSERT INTO campus (id_camp, nombre_camp,id_adminis,id_cent) VALUES (DEFAULT, '"+_nombre+"', '"+_id_admin+"','"+_id_Campus+"');"
     conexion = conectar_db()
     cursor = conexion.cursor()
     cursor.execute(sql)
     conexion.commit()
     print(_nombre)
-    print(_localizacion)
     print(_id_admin)
     return redirect('/admin/campus')
 
@@ -382,10 +374,6 @@ def admin_campus_update():
     if _nombre == '':
         print("Si esta vacia nombre")
         _nombre = old[0][1]
-    _localizacion = request.form['txtLocalizacion']
-    if _localizacion == '':
-        print("Si esta vacia Cupos")
-        _localizacion = old[0][2]
     _admin = request.form.get('txtAdmin')
     if _admin == '':
         print("Si esta vacia administrativo")
@@ -396,12 +384,11 @@ def admin_campus_update():
         _centro = old[0][4]
     print(_id)
     print(_nombre)
-    print(_localizacion)
     print(_admin)
 
     conexion = conectar_db()
     cursor = conexion.cursor()
-    sql = "UPDATE campus SET nombre_camp='"+_nombre+"', localizacion_camp='"+_localizacion+"', id_adminis="+str(_admin)+", id_cent="+str(_centro)+" WHERE id_camp="+_id
+    sql = "UPDATE campus SET nombre_camp='"+_nombre+"', id_adminis="+str(_admin)+", id_cent="+str(_centro)+" WHERE id_camp="+_id
     cursor.execute(sql)
     conexion.commit()
 
@@ -615,116 +602,6 @@ def admin_resultados_guardar():
     conexion.close()
     return redirect('/admin/resultados')
 
-#PArte de administracion de datos
-
-@app.route('/admin/autos')
-def admin_autos():
-
-    if not 'login' in session:
-        return redirect('/admin/login')
-
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    cursor.execute("SELECT * FROM auto ORDER BY id")
-    autos = cursor.fetchall()
-    conexion.commit()
-    print(autos)
-
-    return render_template('admin/autos.html', autos=autos)
-
-@app.route('/admin/autos/guardar', methods=['POST'])
-def admin_autos_guardar():
-    if not 'login' in session:
-        return redirect('/admin/login')
-    _matricula = request.form['txtMatricula']
-    _marca = request.form['txtMarca']
-    _modelo = request.form['txtModelo']
-
-    sql = "INSERT INTO auto (id, matricula, marca, modelo) VALUES (DEFAULT, %s, %s, %s);"
-    datos=(_matricula,_marca,_modelo)
-
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    cursor.execute(sql,datos)
-    conexion.commit()
-
-    print(_matricula)
-    print(_marca)
-    print(_modelo)
-
-    return redirect('/admin/autos')
-
-@app.route('/admin/autos/borrar', methods=['POST'])
-def admin_autos_borrar():
-    if not 'login' in session:
-        return redirect('/admin/login')
-    _id = request.form['txtID']
-    print(_id)
-
-
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    cursor.execute("DELETE FROM auto WHERE id=%s",(_id))
-    conexion.commit()
-
-
-    return redirect("/admin/autos")
-@app.route('/admin/autos/edit', methods=['POST'])
-def admin_edit_auto():
-    if not 'login' in session:
-        return redirect('/admin/login')
-    _id = request.form['txtID']
-    print(_id)
-    
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    sql = "SELECT * FROM auto WHERE id=%s"
-    cursor.execute(sql,_id)
-    autos = cursor.fetchall()
-    conexion.commit()
-    print(autos)
-
-    return render_template('admin/update.html', autos=autos)
-
-@app.route('/admin/autos/update', methods=['POST'])
-def admin_auto_update():
-    if not 'login' in session:
-        return redirect('/admin/login')
-    _id = request.form['txtID']
-
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    sql = "SELECT * FROM auto WHERE id=%s"
-    cursor.execute(sql,_id)
-    autoOld = cursor.fetchall()
-    conexion.commit()
-    print(autoOld)
-
-    _matricula = request.form['txtMatricula']
-    if _matricula == '':
-        print("Si esta vacia matricula")
-        _matricula = autoOld[0][1]
-    _marca = request.form['txtMarca']
-    if _marca == '':
-        print("Si esta vacia marca")
-        _marca = autoOld[0][2]
-    _modelo = request.form['txtModelo']
-    if _modelo == '':
-        print("Si esta vacia modelo")
-        _modelo = autoOld[0][3]
-    print(_id)
-    print(_matricula)
-    print(_marca)
-    print(_modelo)
-
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    sql = "UPDATE auto SET matricula='"+_matricula+"', marca='"+_marca+"', modelo='"+_modelo+"' WHERE id="+_id
-    cursor.execute(sql)
-    conexion.commit()
-
-
-    return redirect("/admin/autos")
 
 if __name__ == '__main__':
     app.run(debug=True)
