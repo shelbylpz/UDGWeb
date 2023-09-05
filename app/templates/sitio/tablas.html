@@ -1,7 +1,7 @@
 {% include 'sitio/cabecera.html' %}
 
 <div class="row">
-    <div class="col-3">
+    <div class="col-2">
       <nav id="navbar" class="h-100 flex-column align-items-stretch pe-4 border-end">
         <nav class="nav nav-pills flex-column">
           <a class="nav-link" href="{% if tabla == 'administrativo' %}#list-item-administrativo{% else %}/tablas/administrativo{% endif %}">Administrativo</a>
@@ -15,7 +15,7 @@
         
        
     </div>
-    <div class="col-9">
+    <div class="col-10">
       <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
         <div class="table-responsive">
             <table class="table table-bordered">

@@ -11,8 +11,8 @@ app.secret_key="develoteca"
 def conectar_db():
     conexion = psycopg2.connect(
         user = 'postgres',
-        password = '22042003-a',
-        host = 'azure-flask-dbapp.postgres.database.azure.com',
+        password = 'password',
+        host = 'localhost',
         port = '5432',
         database = 'UDGDB'
     )
@@ -469,7 +469,7 @@ def admin_carrera_edit():
     administrativos = cursor.fetchall()
     cursor.execute("SELECT * FROM campus ORDER BY id_cent")
     campuss = cursor.fetchall()
-    cursor.execute("SELECT * FROM public.detail_carrera id_car="+_id+";")
+    cursor.execute("SELECT * FROM public.detail_carrera WHERE id_car="+_id+";")
     carrera = cursor.fetchall()
     conexion.commit()
     return render_template('/admin/carrera/update.html', administrativos=administrativos, campuss=campuss, carrera=carrera)
